@@ -1,4 +1,7 @@
-# Description
+# WARNING:
+THIS DOES NOT WORK WITH PLUTONIUM. PLUTONIUM WILL BLOCK dsound.dll, so rename it to something like dsound.dll.bak when running pluto.
+
+# WaWTool
 Draws player coordinates on screen, hides connection interrupted icon with dvar and allows for players to filter the killfeed, showing only their kills.
 
 # Installing
