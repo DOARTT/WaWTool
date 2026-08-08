@@ -1,6 +1,6 @@
 #include "std_include.hpp"
 
-#define VERSION "0.1"
+#define VERSION "0.15"
 
 using namespace game::mp;
 
@@ -78,6 +78,31 @@ namespace components::mp
 		}
 	}
 
+	// this one fixes other player's suicides(changing teams etc.) still showing
+	__declspec(naked) void killfeed_filter_stub2()
+	{
+		const static uint32_t stock_addr = 0x44B7AB;
+		const static uint32_t retn_addr = 0x44B7F3;
+
+		__asm
+		{
+			push	eax;
+			mov		eax, dvars::doart_killfeed_filter;
+			cmp		byte ptr[eax + 0x10], 1;
+			pop		eax;
+
+			je		YUMP;
+
+			jmp		STOCK_loc;
+
+		STOCK_loc:
+			jmp		stock_addr;
+
+		YUMP:
+			jmp		retn_addr;
+		}
+	}
+
 	__declspec(naked) void CG_DrawDisconnect_stub()
 	{
 		const static uint32_t dword_9E2AA0 = 0x9E2AA0;
@@ -116,6 +141,7 @@ namespace components::mp
 
 		// hook in cg_obituary for killfeed filter
 		utils::hook(0x44B74F, killfeed_filter_stub, HOOK_JUMP).install()->quick();
+		utils::hook(0x44B696, killfeed_filter_stub2, HOOK_JUMP).install()->quick();
 
 		// hook in cg_drawdisconnect to hide connection interrupted icon with dvar
 		utils::hook(0x43FFF9, CG_DrawDisconnect_stub, HOOK_JUMP).install()->quick();
